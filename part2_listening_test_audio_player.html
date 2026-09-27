@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listening Test - Part 2</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f7fb;font-family:Arial,sans-serif;color:#1f2937}.card{width:min(92vw,520px);background:#fff;border-radius:18px;padding:30px;box-shadow:0 8px 30px rgba(0,0,0,.08);text-align:center}h1{margin:0 0 8px;font-size:22px}p{color:#6b7280;margin:0 0 24px}button{border:0;border-radius:999px;padding:14px 28px;font-size:17px;font-weight:700;cursor:pointer;background:#111827;color:#fff}button:disabled{opacity:.55;cursor:not-allowed}.status{margin-top:18px;font-weight:600}.timer{margin-top:8px;color:#6b7280;font-variant-numeric:tabular-nums}.note{margin-top:18px;padding:12px;background:#f3f4f6;border-radius:10px;font-size:13px;color:#6b7280}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>🎧 Listening Test – Part 2</h1>
+<p>Click Play to start the recording. | Hãy nhấn Play để file chạy, sau đó làm bài ở Form</p>
+<button id="playBtn">▶ Play Recording</button>
+<div class="status" id="status">Ready</div>
+<div class="timer" id="timer">00:00 / 00:00</div>
+<div class="note">The recording cannot be rewound or skipped.</div>
+</div>
+<audio id="audio" preload="auto"></audio>
+<script>
+// ====== PASTE YOUR AUDIO URL HERE ======
+const AUDIO_URL = "https://github.com/anhpham-mrtomielts/listening-test/raw/73223dc8d6001b115af0d6b49eb1070d6a06efa4/Part%202%20-%20Accommodation%20Agency%20(mp3cut.net).mp3";
+// ========================================
+const audio=document.getElementById('audio');
+const playBtn=document.getElementById('playBtn');
+const status=document.getElementById('status');
+const timer=document.getElementById('timer');
+audio.src=AUDIO_URL;
+let started=false,lastTime=0;
+function fmt(s){if(!Number.isFinite(s))return '00:00';return String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0')}
+audio.addEventListener('loadedmetadata',()=>timer.textContent=`00:00 / ${fmt(audio.duration)}`);
+audio.addEventListener('timeupdate',()=>{if(audio.currentTime<lastTime-0.25)audio.currentTime=lastTime;else if(audio.currentTime>lastTime)lastTime=audio.currentTime;timer.textContent=`${fmt(audio.currentTime)} / ${fmt(audio.duration)}`});
+audio.addEventListener('play',()=>status.textContent='Playing...');
+audio.addEventListener('pause',()=>{if(started&&!audio.ended)audio.play().catch(()=>{})});
+audio.addEventListener('ended',()=>{status.textContent='Recording finished';playBtn.textContent='✓ Finished';playBtn.disabled=true});
+playBtn.addEventListener('click',()=>{if(started)return;started=true;playBtn.disabled=true;playBtn.textContent='🔊 Playing...';audio.play().catch(()=>{status.textContent='Unable to play audio. Please check the audio link.';playBtn.disabled=false;started=false})});
+document.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Home','End',' ','PageUp','PageDown'].includes(e.key))e.preventDefault()});
+</script>
+</body>
+</html>
